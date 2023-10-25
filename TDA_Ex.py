@@ -4,6 +4,7 @@ import numpy as np
 import time as t
 import pandas as pd
 
+#Creating a pivot array for an m by n matrix
 def pivot(x,m,n):
   piv = np.full(n, None)
   for j in range(n):
@@ -12,6 +13,7 @@ def pivot(x,m,n):
           piv[j] = i+1
   return piv 
 
+# Standard Reduction with rightward column addition 
 def standard_reduced(x, m, n):
             for j in range(n):
                    for k in range(j):
@@ -21,8 +23,9 @@ def standard_reduced(x, m, n):
                            standard_reduced(x,m,n)
             return x 
 
-values = []
 
+# Making a table of square matrix dimensions and their reduction runtimes
+values = []
 for dim in range(5,30,5):
   a = t.time()
   matrix = [[random.randint(0,1) for _ in range(dim)] for _ in range(dim)]
@@ -38,7 +41,7 @@ for dim in range(5,30,5):
 
 dictionary = dict(zip([_ for _ in 'ABCDE'],values))
 df = pd.DataFrame(dictionary)
-labels = ['Dimesnion', 'Runtime']
+labels = ['Dimension, 'Runtime']
 df.index = labels
 print(df) 
 
