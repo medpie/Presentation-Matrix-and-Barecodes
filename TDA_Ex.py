@@ -17,7 +17,7 @@ def pivot(x,m,n):
 def standard_reduced(x, m, n):
             for j in range(n):
                    for k in range(j):
-                       if None != pivot(x,m,n)[j] == pivot(x,m,n)[k] and pivot(x,m,n)[j]:
+                       if None != pivot(x,m,n)[j] == pivot(x,m,n)[k]:
                            for i in range(m):
                                x[i][j] = (x[i][j] + x[i][k]) % 2
                            standard_reduced(x,m,n)
@@ -41,8 +41,7 @@ for dim in range(5,30,5):
 
 dictionary = dict(zip([_ for _ in 'ABCDE'],values))
 df = pd.DataFrame(dictionary)
-labels = ['Dimension, 'Runtime']
-df.index = labels
+df.index = ['Dimesnion', 'Runtime']
 print(df) 
 
 
