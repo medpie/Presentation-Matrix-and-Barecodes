@@ -81,19 +81,19 @@ def matrixof_simplices(scomplex):
   return matrix
   
   
-  
 
 
-scomplex = [[1,2,3],[3,4],[4,5,6,7],[4,1]]
+#scomplex = [[1,2,3],[3,4],[4,5,6,7],[4,1]]
+scomplex = [[1,2,3]]
 #print(dict_simplices(scomplex))
-#print(listof_simplices(scomplex))
+n = len(listof_simplices(scomplex))
 #print(listof_simplices(scomplex).get(3))
-#print(matrixof_simplices(scomplex))
-print(tdx.barcode(matrixof_simplices(scomplex),24,24))
-print(tdx.pivot(matrixof_simplices(scomplex), 24, 24))
+print(tdx.standard_breduced(matrixof_simplices(scomplex), n, n))
+print(tdx.barcode(matrixof_simplices(scomplex),n,n))
+#print(tdx.pivot(matrixof_simplices(scomplex), n,n))
 x = matrixof_simplices(scomplex)
-y = tdx.standard_reduced(x, 24, 24)
-z = tdx.pivot(y, 24, 24)
+y = tdx.standard_breduced(x, n,n)
+z = tdx.pivot(y, n,n)
 print(z)
 
 
