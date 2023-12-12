@@ -1,32 +1,44 @@
+from itertools import permutations, combinations
 import numpy as np
-import random
-import matplotlib.pyplot as plt
 
-def dist(I, J, r):
-  distance = 0
-  for i in range(len(I)):
-    for j in range(len(J)):
-            if np.abs(I[i][0] - J[j][0]) <= r and np.abs(I[i][1] - J[j][1]) <= r:
-              distance += np.abs(I[i][0] - J[j][0]) + np.abs(I[i][1] - J[j][1])
-            else:
-               distance += 2*(np.abs(I[i][0] - (I[i][0] + I[i][1])/2) + np.abs(J[j][0] - (J[j][0] + J[j][1])/2))
-  return distance  
-        
-def Wasserstein_delta(I, J):
-   max_delta = max([max([I[_][0] for _ in range(len(I))]), max([I[_][1] for _ in range(len(I))]), max([J[_][0] for _ in range(len(J))]), max([J[_][1] for _ in range(len(J))])])
-   distances = [dist(I, J, r) for r in range(1, max_delta + 1)]
-   index = distances.index(min(distances))
-   return index + 1
+#Making a list of all matchings of k pairs (a,b) where a and b are intervals in A & B 
+def matching(A,B,k):
+    k_match = []
+    M = [[[A[i], B[j]] for j in range(len(B))] for i in range(len(A))]
+    k_indices = combinations([_ for _ in range(len(A))], k)
+    for item in k_indices:
+            perm = permutations([_ for _ in range(len(B))], k)
+            for p in perm:
+                  k_match.append([M[item[index]][p[index]] for index in range(k)])
+    return k_match
 
-x = [[random.randint(0,30), random.randint(0,30)] for _ in range(random.randint(1,30))]
-print(f'Barcode1: {x}')
-y = [[random.randint(0,30), random.randint(0,30)] for _ in range(random.randint(1,30))]
-print(f'Barcode2: {y}')
-R = [_ for _ in range(30)]
-Dist = [dist(x,y,R[_]) for _ in range(30)]
-ax = plt.subplot()
-ax.set_xlabel('delta', color = 'red')
-ax.set_ylabel('Distance(delta)', color = 'red')
-ax.set_title(f'Wasserstein distance = {min(Dist)} is attained at delta = {Wasserstein_delta(x,y)}', ha = 'center', color = 'red')
-plt.scatter(R, Dist) 
-plt.show()
+
+#Computing Wasserstein distance of two barcodes (two lists of intervals)
+def Wasserstein(A,B,p):
+      if len(A) > len(B):
+            A, B = B, A
+      sum = []
+      for k in range(1,len(A)+1):
+            k_pairs = matching(A, B, k)
+            sum_k = []
+            for item in k_pairs:
+                  sum_k_item = 0
+                  for index in range(k):
+                     sum_k_item += np.abs(item[index][0][0] - item[index][1][0])**p + np.abs(item[index][0][1] - item[index][1][1])**p
+                  for B_item in B:
+                        value = False
+                        for index in range(k):
+                                          if B_item == item[index][1]:
+                                                 value = True
+                        if value == False:
+                               sum_k_item += 2*(((B_item[1] - B_item[0])/2)**p)
+                  sum_k.append(sum_k_item)
+            min_sum_k = min(sum_k)
+            sum.append(min_sum_k)
+      return f'Wasserstein Distance of A and B: {min(sum)}'                 
+
+A = [[0,2],[4,7]]
+B = [[0,7],[4,8]]
+#print(matching(A,B, 2))
+print(Wasserstein(A,B,1))
+
