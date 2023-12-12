@@ -1,82 +1,91 @@
 # Exercise 8.17, page 84, TDA book
 import random
 import numpy as np
-import time as t
-import pandas as pd
 
 #Creating a pivot array for an m by n matrix
 def pivot(x,m,n):
-  #piv = np.full(n, None)
-  piv = [None for _ in range(m)]
+  piv = np.zeros(m)
   for j in range(n):
     for i in range(m):
-        if x[i][j] != 0:
+        if x[i,j] != 0:
           piv[j] = i+1
   return piv 
 
+#==================================
 # Standard Reduction matrix with rightward Boolean column addition, i.e., F = Z/2Z
 def standard_breduced(x, m, n):
-            for j in range(n):
-                   for k in range(j):
-                       if pivot(x,m,n)[j] == pivot(x,m,n)[k] and pivot(x,m,n)[j] != None:
-                           p = pivot(x,m,n)[j]
-                           for i in range(m):
-                               # For binary matrices
-                               x[i][j] = (x[i][j] + x[i][k]) % 2
+            def column_operations(matrix, m, n):    
+              for j in range(n):
+                    for k in range(j):
+                        if pivot(matrix,m,n)[j] == pivot(matrix,m,n)[k] and pivot(matrix,m,n)[j] != 0:
+                                matrix[:, j] = (matrix[:, j] + matrix[:, k])%2
                                #x[i][j] = (- x[p-1][j]/x[p-1][k])*x[i][k] + x[i][j]
-                           standard_breduced(x,m,n)
+              return matrix
+            while True:     
+                  column_operations(x, m, n)
+                  non_zero_piv = pivot(x,m,n)[pivot(x,m,n) != 0]
+                  if len(non_zero_piv) == len(set(non_zero_piv)):
+                       break
             return x 
 
+matrix = np.array([[random.randint(0,1) for _ in range(20)] for _ in range(20)])
+#print(matrix)
+#print(pivot(matrix, 10,10))
+#print(standard_breduced(matrix, 50, 50))
+#print(pivot(standard_breduced(matrix, 20, 20), 20, 20))
+#sample = standard_breduced(matrix, 50,50)
+#np.savetxt('D:\\sample_text.txt', sample)
+
+
+#======================================================================
 # Standard Reduction matrix with rightward column addition, i.e., Field = Reals
 def standard_reduced(x, m, n):
-            for j in range(n):
-                   for k in range(j):
-                       if pivot(x,m,n)[j] == pivot(x,m,n)[k] and pivot(x,m,n)[j] != None:
-                           p = pivot(x,m,n)[j]
-                           for i in range(m):
-                               # For binary matrices
-                               #x[i][j] = (x[i][j] + x[i][k]) % 2
-                               x[i][j] = (- x[p-1][j]/x[p-1][k])*x[i][k] + x[i][j]
-                           standard_reduced(x,m,n)
-            return x 
+            def column_operations(matrix, m, n):    
+              for j in range(n):
+                    for k in range(j):
+                        if pivot(matrix,m,n)[j] == pivot(matrix,m,n)[k] and pivot(matrix,m,n)[j] != 0:
+                                p = pivot(x,m,n)[j]
+                                x[:, j] = (- x[p-1,j]/x[p-1,k])*x[:, k] + x[:,j]
+              return matrix
+            while True:     
+                  column_operations(x, m, n)
+                  non_zero_piv = pivot(x,m,n)[pivot(x,m,n) != 0]
+                  if len(non_zero_piv) == len(set(non_zero_piv)):
+                       break
+            return x
+                           
 
-
-
+#=======================================================
 # Computing barecode of a reduced matrix x
-def barcode(matrix, m, n):
-  #Choose the type of standard reduction based on the abient field
-  x = standard_breduced(matrix,m,n)
-  barc = []
-  for k in range(n):
-    if (pivot(x,m,n)[k] != None) and (pivot(x,m,n)[k] < k+1):
-          barc.append(f'[{pivot(x,m,n)[k]}, {k+1})')
-    elif (pivot(x,m,n)[k] == None) and ((k+1) not in pivot(x,m,n)):
-        barc.append(f'[{k+1}, infinity)')
-  return barc
-
-
 def bar(matrix, m, n):
   #Choose the type of standard reduction based on the abient field
   x = standard_breduced(matrix,m,n)
   barc = []
   for k in range(n):
-    if (pivot(x,m,n)[k] != None) and (pivot(x,m,n)[k] < k+1):
+    if (pivot(x,m,n)[k] != 0) and (pivot(x,m,n)[k] < k+1):
+          barc.append(f'[{pivot(x,m,n)[k]}, {k+1})')
+    elif (pivot(x,m,n)[k] == 0) and ((k+1) not in pivot(x,m,n)):
+        barc.append(f'[{k+1}, infinity)')
+  return barc
+
+
+#==================================================================
+def barcode(matrix, m, n):
+  #Choose the type of standard reduction based on the abient field
+  x = standard_breduced(matrix,m,n)
+  barc = []
+  for k in range(n):
+    if (pivot(x,m,n)[k] != 0) and (pivot(x,m,n)[k] < k+1):
           barc.append([pivot(x,m,n)[k], k+1])
-    elif (pivot(x,m,n)[k] == None) and ((k+1) not in pivot(x,m,n)):
+    elif (pivot(x,m,n)[k] == 0) and ((k+1) not in pivot(x,m,n)):
         barc.append([k+1])
   return barc
 
 
-#matrix = [[random.randint(0,1) for _ in range(10)] for _ in range(10)]
-#m = [[0, 0, 0, 0, 0, 0, 0, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0, 0, 0, 1], [0, 0, 0, 0, 1, 1, 0, 1, 0, 1], [0, 0, 0, 0, 1, 1, 0, 1, 1, 1], [0, 1, 0, 1, 1, 1, 0, 0, 1, 0], [0, 0, 1, 1, 0, 1, 1, 1, 0, 0], [0, 0, 1, 0, 1, 0, 0, 0, 1, 0], [1, 1, 1, 1, 1, 1, 1, 1, 1, 1], [0, 1, 1, 0, 1, 1, 1, 0, 1, 0], [1, 1, 0, 0, 0, 1, 0, 0, 1, 1]]
+print(barcode(matrix, 20, 20))
+#=======================================================================
 
-#print(matrix)
-#print(matrix)
-#print(pivot(matrix,10,10))
-#standard_reduced(matrix,10,10)
-#print(pivot(matrix,10,10))
-#print(barcode_list(m, 10,10))
-#print(barcode(m, 10, 10))
+
 
 # Making a table of square matrix dimensions and their reduction runtimes
 """
