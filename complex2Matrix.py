@@ -15,6 +15,7 @@ def listof_simplices(scomplex):
      for index in range(1,dim_s + 1):
         sim_index = [obj for obj in combinations(s, index)]
         simplices += sim_index
+  simplices.sort(key = len)
   return list(set(simplices))
 
 
@@ -57,8 +58,11 @@ def pers_diagram(scomplex):
      plt.savefig('D:\\figure.jpg', format = 'png', dpi = 300)
      plt.show()
 
-#scomplex = [[1,2], [2,3,4]]
-scomplex = [[1,2,3],[3,4],[4,5,6,7],[4,1],[4,1,8,11], [8,3,6,7,11], [11,7]]
-print(listof_simplices(scomplex))
-print(matrixof_simplices(scomplex))
+
+scomplex = [[1,2], [2,3,4,5]]
+"""print(listof_simplices(scomplex))
+X = matrixof_simplices(scomplex)
+n = len(listof_simplices(scomplex))
+print(tdx.bar(X,n,n))
+"""
 pers_diagram(scomplex)
