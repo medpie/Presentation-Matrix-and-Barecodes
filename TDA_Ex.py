@@ -12,7 +12,7 @@ def pivot(x,m,n):
   return piv 
 
 #==================================
-# Standard Reduction matrix with rightward Boolean column addition, i.e., F = Z/2Z
+# Standard Reduction matrix with rightward binary column addition, i.e., F = Z/2Z
 def standard_breduced(x, m, n):
             def column_operations(matrix, m, n):    
               for j in range(n):
@@ -28,7 +28,8 @@ def standard_breduced(x, m, n):
                        break
             return x 
 
-matrix = np.array([[random.randint(0,1) for _ in range(20)] for _ in range(20)])
+
+#matrix = np.array([[random.randint(0,1) for _ in range(20)] for _ in range(20)])
 #print(matrix)
 #print(pivot(matrix, 10,10))
 #print(standard_breduced(matrix, 50, 50))
@@ -58,15 +59,16 @@ def standard_reduced(x, m, n):
 #=======================================================
 # Computing barecode of a reduced matrix x
 def bar(matrix, m, n):
-  #Choose the type of standard reduction based on the abient field
+  #Choose the type of standard reduction based on the ambient field
   x = standard_breduced(matrix,m,n)
   barc = []
   for k in range(n):
     if (pivot(x,m,n)[k] != 0) and (pivot(x,m,n)[k] < k+1):
-          barc.append(f'[{pivot(x,m,n)[k]}, {k+1})')
+          barc.append(f'[{int(pivot(x,m,n)[k])}, {k+1})')
     elif (pivot(x,m,n)[k] == 0) and ((k+1) not in pivot(x,m,n)):
-        barc.append(f'[{k+1}, infinity)')
+        barc.append(f'[{int(k+1)}, infinity)')
   return barc
+
 
 
 #==================================================================
@@ -81,8 +83,12 @@ def barcode(matrix, m, n):
         barc.append([k+1])
   return barc
 
+#matrix = np.array([[0,0,0,1,0,0,0], [0,0,0,1,1,0,0], [0,0,0,0,1,0,0],[0,0,0,0,0,0,1],[0,0,0,0,0,0,1],[0,0,0,0,#0,0,1],[0,0,0,0,0,0,0]]) 
+#print(barcode(matrix, 7, 7))
 
-print(barcode(matrix, 20, 20))
+
+
+#print(f'baecode: {barcode(matrix, 20, 20)}')
 #=======================================================================
 
 
@@ -110,7 +116,7 @@ for dim in range(5,30,5):
 
 dictionary = dict(zip([_ for _ in 'ABCDE'],values))
 df = pd.DataFrame(dictionary)
-df.index = ['Dimesnion', 'Runtime']
+df.index = ['Dimension, 'Runtime']
 print(df) 
 """
 
